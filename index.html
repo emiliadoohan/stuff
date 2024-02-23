@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=false" />
-    <title>DAY FOUR!!! AHHHHHH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EM'S TECHNICOLOUR GLITCH</title>
     <script src="./lib/hydra-synth.js"></script>
-    <script src="./lib/gyro.js"></script>
+    <script src="./lib/gyro2.js"></script>
     <styLe>
         html,
         body {
@@ -14,24 +14,94 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background: black;
+            /* background: black; */
         }
 
         canvas {
             display: block;
         }
+
+        #hydra-canvas {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #gyro-button {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            background-image: url("cover.png");
+            /* background-position: center; */
+            /* background-image: url("cover.png"); */
+        }
     </styLe>
 </head>
 
 <body>
-    <script type="module">
-        const h = new Hydra()
 
-        shape().scrollX(() => gyro.beta / 4).scrollY(() => gyro.gamma / 4).out()
+    <canvas id="hydra-canvas"></canvas>
+    <button id="gyro-button"></button>
+    <script type="module">
+    
+        const hydraCanvas = document.getElementById('hydra-canvas')
+        hydraCanvas.width = window.innerWidth
+        hydraCanvas.height = window.innerHeight
+        const h = new Hydra({ canvas: hydraCanvas })
+
         gyro.requestPermissions(document.getElementById('gyro-button'))
-        gyro.show()
+
+        const sketch1 = () => {
+            osc(2,0.01,()=>a.fft[0])
+  .color(0, -0.2, 10)
+  .modulateKaleid(osc(11,0.5,),50)
+  .scale(0.1,0.3)
+  .modulate(noise(5,0.2))
+  .mult(solid(1,1,0.3))
+  .rotate(0.1,0.07)
+  .out(o0)
+
+osc(3,0.1,2)
+ 
+  .rotate(3,0.3)
+  .out(o1)
+
+  src(o0).diff(o1).contrast(2).out(o2)
+
+  src(o3).blend(o2,1).modulate(noise(2).rotate(3,0.3),-.005).out(o3)
+
+  render(o2)
+        }
+
+
+        const sketch2 = () => {
+            src(o3).blend(o2,0).modulate(noise(2).rotate(3,0.3),-.005).out(o3)
+            render(o3)
+        }
+
+      
+        
+
+        // array of available sketches
+        const mySketches = [sketch1, sketch2]
+        let currentSketch = 0
+
+        mySketches[0]()
+
+        // listen to events
+        window.addEventListener('pointerdown', () => {
+            currentSketch++
+            if(currentSketch >= mySketches.length) currentSketch = 0
+            mySketches[currentSketch]()
+        })
+
     </script>
-    <button id="gyro-button">activate gyroscope</button>
+   
 </body>
 
 </html>
